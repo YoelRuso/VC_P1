@@ -134,5 +134,3 @@ La **entrega del cuaderno o cuadernos** con la resolución de tareas propuestas 
 
 ***
 Bajo licencia de Creative Commons Reconocimiento - No Comercial 4.0 Internacional
-#   V C _ P 1  
- 
