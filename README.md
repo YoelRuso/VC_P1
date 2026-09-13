@@ -1,136 +1,170 @@
-## Práctica 1. Primeros pasos con OpenCV
+# Práctica 1. Primeros pasos con OpenCV
 
-### Contenidos
+Visión por Computador — Grado en Ingeniería Informática, ULPGC (curso 2025/2026).
 
-[Instalación](#11-instalando-el-entorno-de-desarrollo)  
-[Anaconda](#111-comandos-basicos-de-anaconda)  
-[Mi carpeta](#112-el-environment-en-otra-carpeta)  
-[Spec-list](#113-un-environment-para-varias-practicas)  
-[Aspectos cubiertos](#12-aspectos-cubiertos)  
+## Autoría
 
-### 1.1. Instalando el entorno de desarrollo  
+- Joel Morera Apaza
 
-Si bien tienen libertad para seleccionar el entorno de desarrollo, la opción escogida para mostrar
-los distintos ejemplos en el laboratorio con Python desde Windows ha sido [Anaconda](https://www.anaconda.com). Anaconda permite crear distintos *environments*, cada uno con sus paquetes particulares y versiones específicas instaladas, pudiendo desde [Visual Studio Code](https://code.visualstudio.com) ejecutar un cuaderno concreto escogiendo el *environment* que interese. Para las personas que prefieran no utilizar Windows, comentarles que nuestra experiencia en Linux con [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html) ha sido similar.
+Repositorio: <https://github.com/YoelRuso/VC_P1>
 
-Los equipos del laboratorio ya cuentan con Anaconda y VS Code instalados, si bien no completamente configurados para ejecutar el cuaderno de esta práctica. Conocida esta circunstancia, para poder ejecutar un primer cuaderno proporcionado tras contar en el equipo con la instalación de Anaconda y VS Code, los pasos a realizar son:
+## Contenido del repositorio
 
-- Lanzar *Anaconda Prompt*
+| Archivo | Descripción |
+|---|---|
+| `VC_P1.ipynb` | Cuaderno con los ejemplos de clase y la resolución de las cuatro tareas |
+| `pop-art-gary-grayson.jpg` | Patrón de estrellas usado como fondo en la tarea 4 |
+| `logo_ulpgc_vertical_acronimo_mancheta_azul.png` | Imagen de ejemplo para la lectura desde disco |
+| `VermeerFun.mp4` | Vídeo de ejemplo para la lectura de fotogramas |
+| `imagen.jpg` | Salida generada por la celda de primitivas de dibujo |
+| `spec-list.txt` | Lista de paquetes proporcionada con el enunciado |
 
-- Crear el *environment* con la configuración que nos interese. Para crear uno que ejecute el cuaderno de esta primera práctica, sin darle muchas vueltas con una versión reciente de Python, se les propone lo siguiente:
+## Entorno y ejecución
+
+El cuaderno se ha desarrollado sobre un *environment* de Anaconda con **Python 3.11.14**:
 
 ```
 conda create --name VC_P1 python=3.11.5
-```
-
-Observen que crea el *environment* denominado *VC_P1* con una versión de Python en particular. Sustituye *VC_P1* por el nombre que decidas. Tras crearlo, y activarlo, instala un par de paquetes adicionales (recuerda sustituir *VC_P1* por el nombre que hayas escogido):
-
-```
 conda activate VC_P1
-pip install opencv-python
-pip install matplotlib
+pip install opencv-python matplotlib
 ```
 
-NOTA: Para aquellas personas que quieren trabajar bajo Windows, tienen disponible en la sección 1.1.2, la descripción de creación de un *environment* con más paquetes que tendrá vida útil para varias prácticas, si bien con una versión previa de Python. No es estrictamente necesario, y puede dar algún quebradero de cabeza.
+**No hace falta ninguna instalación adicional** más allá de eso. La única dependencia opcional es
+`Pillow`: la tarea 4 incluye una función `cargar_imagen()` que recurre a PIL únicamente si
+`cv2.imread` falla al abrir el patrón de fondo (por ejemplo con un `.webp` en compilaciones de
+OpenCV sin ese soporte). Con el `.jpg` que viene en el repositorio nunca se llega a usar.
 
-Una vez que ya está el *environment* creado:
+Las tareas 3 y 4 **necesitan webcam**. Las ventanas se cierran pulsando **ESC**; se abren en una
+ventana independiente de OpenCV, no integradas en el cuaderno, por lo que esas celdas no dejan
+salida guardada en el `.ipynb`.
 
-- Descargar los archivos disponibles en github
+---
 
-- Colocarse en la carpeta *P1*, correspondiente a la práctica 1
+## Tarea 1 — Tablero de ajedrez
 
-- Lanzar VS Code (en el PC del laboratorio disponible en el escritorio)
+Imagen de 800×800 con casillas de 100 px, resuelta dos veces para poder comparar.
 
-- Instalar la extensión de Python en VS Code. Desde el [enlace](https://code.visualstudio.com/docs/languages/python) con VS Code abierto debería llevar al [enlace](https://marketplace.visualstudio.com/items?itemName=ms-python.python) en el *Marketplace*
+**Versión manual.** 32 llamadas explícitas a `cv2.rectangle` sobre un lienzo `np.zeros`, una por
+casilla blanca, escribiendo a mano las coordenadas de cada esquina.
 
-- Abrir el cuaderno de la práctica en VS Code (si el doble clic no va, puedes abrir el archivo desde VC Code)
+**Versión con IA.** Dos bucles anidados sobre filas y columnas que pintan la casilla cuando
+`(fila + columna) % 2 == 0`.
 
-- Con el cuaderno abierto, en la parte superior derecha aparece *Select Kernel*. Tras picar deberías poder escoger el *environment*
+**Comparación.** La versión manual sirvió para entender los parámetros de `cv2.rectangle` y el
+sistema de coordenadas del lienzo, pero es larga, repetitiva y está atada a un tamaño concreto: un
+tablero de otras dimensiones obliga a reescribirla entera. La versión con bucles es mucho más corta
+y parametrizable — cambiando `celda` o el tamaño del lienzo sigue funcionando. En coste de cómputo
+son equivalentes: ambas acaban haciendo 32 llamadas a `cv2.rectangle`, así que la diferencia está en
+la mantenibilidad, no en el rendimiento. Se conservan las dos en el cuaderno: la manual como parte
+del aprendizaje y la del bucle como la versión que se entregaría.
 
-- Si no funcionara lo anterior, se hace necesario lanzar su *Command Palette* con la combinación *CTRL+SHIT+Palette*. Desde ella selecciona el *environment* recientemente creado, tecleando *Python: Seleccionar intérprete*, escogiendo el que nos interesa, el *environment* *VC_P1*. En caso de no aparecer, a pesar de  haber sido creado, en algunos equipos ha sido necesario cerrar y volver a lanzar VS Code.
+## Tarea 2 — Imagen estilo Mondrian
 
-- En algunas máquinas al intentar el comando anterior, ha aparecido un error con algo como *interpreter not found*. Se ha resuelto seleccionando en la parte inferior izquierda el modo *Trust* en lugar de *Restricted*.
+Resuelta **sin herramientas de IA**, partiendo del ejemplo de primitivas de dibujo del cuaderno.
+Sobre un lienzo blanco de 300×200 (`np.full(..., 255)`) se trazan primero las líneas negras que
+forman la retícula con `cv2.line` (grosor 3) y después se rellenan los huecos con `cv2.rectangle`
+en modo relleno (`-1`) usando los tres colores primarios de Mondrian: rojo, amarillo y azul. Las
+coordenadas se ajustaron a mano para reproducir la composición asimétrica característica del autor,
+con rectángulos de tamaños desiguales y algunos huecos en blanco.
 
-- Una vez llegados a este punto, la primera ejecución de un cuaderno probablemente produzca un error, ya que es necesario instalar *ipykernel* con elementos para el uso de los cuadernos. Si no funciona de forma automática, VS Code dará error y sugerirá lanzar desde línea de comando (en ocasiones hemos tenido que lanzarlo desde el environment *base*):
+## Tarea 3 — Píxel más claro y más oscuro
 
-```
-conda install -n ENV_NAME ipykernel --update-deps --force-reinstall
-```
+Partiendo de la celda del manejador de ratón, en cada fotograma se convierte a gris con
+`cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)` y se localizan los extremos con `cv2.minMaxLoc`, que
+devuelve valor y posición del mínimo y del máximo en una sola pasada. Sobre esas posiciones se
+dibuja un círculo azul (más oscuro) y otro rojo (más claro), y se mantiene el texto con los valores
+RGB bajo el puntero.
 
-- Llegados a este punto, ya debería ser posible ejecutar el cuaderno de esta primera práctica. Cruzo los dedos, y veremos las variantes con las que se encuentran ustedes.
+**¿Va fluido o a saltos?** Va fluido. La búsqueda se hace sobre la imagen en gris, es decir sobre un
+único plano en lugar de tres, y `cv2.minMaxLoc` está implementado en C: recorre el array una sola
+vez sin que el bucle pase por el intérprete de Python. El coste por fotograma es despreciable frente
+a la propia captura de la cámara.
 
-#### 1.1.1. Comandos básicos de Anaconda
+**¿Cómo se aceleraría si fuera a saltos?** La solución ingenua —recorrer los píxeles con bucles
+`for` en Python— sí se arrastra, y ahí las opciones serían: usar las operaciones vectorizadas de
+NumPy/OpenCV en lugar del bucle (que es justo lo que se hace aquí), reducir la resolución antes de
+buscar con `cv2.resize` o `cv2.pyrDown` y reescalar después las coordenadas encontradas, o limitar
+la búsqueda a una región de interés en vez de al fotograma completo.
 
-En el proceso de creación del *environment* pueden surgir errores, quizás necesitemos eliminarlo, crearlo de  nuevo, listar los existentes, etc.. Un muy breve resumen de comandos frecuentes:
+## Tarea 4 — Propuesta propia de pop art
 
-```
-conda info --envs # Lista environments existentes
-conda remove --name ENV_NAME --all # Elimina el environment ENV_NAME
-conda list --explicit > spec-file.txt   # genera un txt con los elementos presentes en el environment activado
-```
+Collage 2×2 en directo inspirado en la *Marilyn* de Warhol, pero llevado a una posterización
+configurable en lugar de la separación de canales del ejemplo de clase.
 
+Cada fotograma se procesa así:
 
+1. **Espejo y realce.** Se voltea horizontalmente y, opcionalmente, se ecualiza el contraste local
+   con **CLAHE** para que los tonos queden bien repartidos con cualquier iluminación.
+2. **Aplanado.** `cv2.bilateralFilter` + `cv2.medianBlur` eliminan el ruido conservando los bordes,
+   de modo que las zonas de color salen limpias y no moteadas.
+3. **Posterización a 4 tonos.** Se calculan tres umbrales —fijos o automáticos por **percentiles**
+   de la imagen, lo que adapta el resultado a la luz de la escena— y se construye una **LUT** que
+   `cv2.LUT` aplica de golpe. Se usan cuatro paletas distintas, una por cuadrante.
+4. **Patrón de fondo.** Uno de los cuatro niveles de tono (elegible) se sustituye por un patrón de
+   estrellas en vez de un color plano. El patrón se separa en motivo y fondo con **umbralizado de
+   Otsu** y se repinta con dos colores distintos en cada cuadrante; además se voltea en cada uno
+   para que no se vea repetido. Existe un segundo modo, `tinte`, que en lugar de repintar desplaza
+   el tono en **HSV**, válido para cualquier imagen y no solo para tramas planas.
+5. **Contorno.** `cv2.Canny` + `cv2.dilate` añaden una línea negra sobre los bordes, que es lo que
+   da el aire de serigrafía.
 
-#### 1.1.2. El environment en otra carpeta
+Los cuatro cuadrantes son **vistas** (*slices*) del array del collage, así que se escriben en su
+sitio sin copias intermedias, y los patrones de fondo se recalculan solo al cambiar un ajuste, no en
+cada fotograma.
 
+**Controles interactivos:**
 
-Tener presente que en el laboratorio, si trabajas con el ordenador del aula, el rearranque borra directorios locales, por lo que los *environments* creados localmente, desaparecen. Puede interesar por ello crearlo en una carpeta local que no se limpie, como */pub/tmp*, en un disco externo o *pen* propio con *--prefix flag*.
-Para crear el *environment* de la subsección previa en una carpeta concreta en el PC, he procedido con los siguientes comandos:
+| Tecla | Acción |
+|---|---|
+| `ESC` | Salir |
+| `f` | Activa/desactiva el patrón de fondo |
+| `0`–`3` | Nivel de tono que muestra el patrón (0 = más oscuro, 3 = más claro) |
+| `p` | Rota qué combinación de colores va a cada cuadrante |
+| `m` | Alterna el modo de recoloreado: `dos_tonos` / `tinte` |
+| `a` | Alterna umbrales automáticos (percentiles) / fijos |
+| `c` | Activa/desactiva la línea de contorno |
+| `g` | Activa/desactiva el realce de contraste (CLAHE) |
+| `+` / `-` | Desplaza los umbrales (más claro / más oscuro) |
+| `s` | Guarda un PNG del collage (`popart_NN.png`) |
 
-```
-conda create --prefix c:/pub/tmp/JPA/FACES --file spec-list.txt python=3.7.3
-conda activate c:/pub/tmp/JPA/FACES
-pip install imutils scikit-learn matplotlib
-```
+<!-- TODO: capturar un par de resultados con la tecla 's' y enlazarlos aqui, p.e.:
+![Resultado pop art](popart_01.png)
+-->
 
+---
 
-Si algo hubiera ido mal y quisieras eliminar el *environment* para empezar de nuevo, recordar los comandos del apartado 1.1.1
+## Fuentes consultadas
 
+- Documentación de OpenCV: [funciones de dibujo](https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html),
+  [`minMaxLoc`](https://docs.opencv.org/4.x/d2/de8/group__core__array.html#gab473bf2eb6d14ff97e89b355dac20707),
+  [`LUT`](https://docs.opencv.org/4.x/d2/de8/group__core__array.html#gab55b8d062b7f5587720ede032d34156f),
+  [umbralizado y método de Otsu](https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html),
+  [detector de bordes de Canny](https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html),
+  [ecualización de histograma y CLAHE](https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html),
+  [filtrado que preserva bordes](https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html)
+- [`numpy.digitize`](https://numpy.org/doc/stable/reference/generated/numpy.digitize.html) y
+  [`numpy.percentile`](https://numpy.org/doc/stable/reference/generated/numpy.percentile.html)
+- Piet Mondrian, *Composición con rojo, amarillo y azul* (1930) — referencia visual de la tarea 2.
+  [Descubriendo a Mondrian](https://www3.gobiernodecanarias.org/medusa/ecoescuela/sa/2017/04/17/descubriendo-a-mondrian/)
+- Andy Warhol, *Marilyn Diptych* (1962) — referencia visual de la tarea 4.
+  [Comentario de la obra](https://temasycomentariosartepaeg.blogspot.com/p/autor-andy-warhol-1928-1987-titulo.html)
+- `pop-art-gary-grayson.jpg`: patrón de estrellas de stock descargado de
+  https://previews.123rf.com/images/lenalanette/lenalanette1707/lenalanette170700018/82052979-pop-art-background-with-stars-seamless-vector-illustration.jpg.
+  Se usa únicamente como textura decorativa de fondo dentro del cuaderno.
+- Material y cuaderno base de la asignatura, proporcionados por el profesorado de Visión por
+  Computador (ULPGC).
 
-#### 1.1.3. Un environment para varias prácticas
+## Uso de herramientas de IA
 
-En ocasiones puede ser necesario clonar un *environment* en otro equipo. Una posibilidad es exportando la lista de requisitos, y proceder a su instalación en el otro equipo. Reproduzco la instalación que está en funcionamiento en mi equipo portátil en su partición bajo Windows (no funcionará con otros sistemas operativos). Hace uso de la versión Python 3.7.3, e incluye
-paquetes no necesarios en las primeras prácticas. En el caso de querer adoptarla, sugiero sustituir *ENV_NAME* por un nombre de tu elección. En el caso de trabajar en otro sistema operativo, evitar incluir *spec-list.txt* e ir añadiendo los paquetes que vayan siendo necesarios.
+- **Tarea 1 (versión con IA).** Se pidió a un asistente la generación del tablero con bucles para
+  contrastarla con la versión manual. <!-- TODO: enlace a la conversación -->
+- **Tarea 2.** Resuelta sin asistentes de IA, tal y como pedía el enunciado.
+- **Tarea 3.** Se consultó cómo obtener las posiciones del píxel más claro y más oscuro, de donde
+  salió el uso de `cv2.minMaxLoc`.
+  Conversación: <https://claude.ai/share/690d1b84-02da-409f-a86b-91d6bf7fba5b>
+- **Tarea 4.** https://claude.ai/share/3c25dee0-2184-4904-a24d-de7b45f457a0
 
-```
-conda create --name ENV_NAME python=3.7.3 --file spec-list.txt
-```
+---
 
-El comando anterior puede requerir unos minutos. A continuación se activa el *environment*
-
-```
-conda activate ENV_NAME
-```
-
-Y se instala algún paquete adicional necesario
-
-```
-pip install imutils scikit-learn matplotlib
-```
-
-
-### 1.2. Aspectos cubiertos y entrega
-
-El objetivo de esta práctica en primer término es poder ejecutar el cuaderno proporcionado en nuestro propio equipo o el del laboratorio. Este primer cuaderno (*VC_P1.ipynb*) debe servir para comprender de forma aplicada la representación de imágenes de grises y color, su modificación, visualización y tratamiento básico. Al finalizar la práctica, debes ser capaz de crear una imagen de un determinado tamaño,
-acceder a los valores asociados a un determinado píxel, modificar dichos valores, dibujar primitivas gráficas básicas sobre una imagen, abrir una imagen de disco, así como acceder a los fotogramas de un vídeo o captura de cámara. Para todo ello, se proponen varias tareas (espero no dejarme ninguna atrás aquí, en cualquier caso, la fuente fiable es el cuaderno):
-
-- Crear una imagen con la textura de un tablero de ajedrez
-- Hacer uso de las funciones de dibujo de OpenCV para crear una imagen estilo Mondrian como por ejemplo la mostrada a continuación:
-
-![Mondrian](https://images.squarespace-cdn.com/content/v1/5f638d3adfa9c677cced1579/1602089211975-ONZ6AALHOOPRVT7Z5ALL/Composición+en+rojo%2C+amarillo+y+azul.jpg?format=500w)  
-*Piet Mondrian, "Composición con rojo, amarillo y azul" (1930).*
-
-- Destacar tanto el píxel con el color más claro como con el color más oscuro de una imagen
-- Hacer una propuesta pop art con la entrada de la cámara web o vídeo
-
-La **entrega del cuaderno o cuadernos** con la resolución de tareas propuestas e imágenes resultantes se realizará por grupos a través del campus virtual por medio de un **enlace github**, teniendo como límite el comienzo de la siguiente sesión práctica de cada grupo. Dichos cuadernos **no deben contener celdas que no sean de interés para la resolución de las tareas**. Durante la siguiente sesión práctica cada grupo, en orden aleatorio, presentará y defenderá el resultado al profesor responsable de la práctica. De forma genérica, para todas las prácticas, el repositorio github debe incluir un **archivo README** describiendo el trabajo realizado, identificando la **autoría**, además de incluir **referencia a todas las fuentes que hayan sido utilizadas** de alguna forma en el desarrollo de la práctica, e indicar si la ejecución del cuaderno requiere alguna instalación adicional. Será adecuado que el o los cuadernos estén también comentados indicando el propósito de las distintas celdas presentadas como resolución de la tarea o tareas solicitadas.
-
-**De cara a todas las entregas**, cada práctica se valora de 0 a 5:
-- No entregado (0) 
-- deficiente (1-2)
-- cumple estrictamente lo solicitado (3)
-- calidad documentación, código y ampliaciones sobre las tareas solicitadas (4-5)
-
-
-***
-Bajo licencia de Creative Commons Reconocimiento - No Comercial 4.0 Internacional
+Enunciado original de la práctica bajo licencia Creative Commons Reconocimiento - No Comercial 4.0
+Internacional.
