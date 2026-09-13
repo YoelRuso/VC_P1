@@ -14,6 +14,7 @@ Repositorio: <https://github.com/YoelRuso/VC_P1>
 |---|---|
 | `VC_P1.ipynb` | Cuaderno con los ejemplos de clase y la resolución de las cuatro tareas |
 | `pop-art-gary-grayson.jpg` | Patrón de estrellas usado como fondo en la tarea 4 |
+| `popart_01.png` … `popart_04.png` | Capturas del resultado de la tarea 4 |
 | `logo_ulpgc_vertical_acronimo_mancheta_azul.png` | Imagen de ejemplo para la lectura desde disco |
 | `VermeerFun.mp4` | Vídeo de ejemplo para la lectura de fotogramas |
 | `imagen.jpg` | Salida generada por la celda de primitivas de dibujo |
@@ -127,9 +128,15 @@ cada fotograma.
 | `+` / `-` | Desplaza los umbrales (más claro / más oscuro) |
 | `s` | Guarda un PNG del collage (`popart_NN.png`) |
 
-<!-- TODO: capturar un par de resultados con la tecla 's' y enlazarlos aqui, p.e.:
-![Resultado pop art](popart_01.png)
--->
+**Resultados.** Capturas tomadas con la tecla `s` durante la ejecución, variando los ajustes desde
+el teclado:
+
+| | |
+|:--:|:--:|
+| ![Patrón de estrellas sobre el tono medio](popart_01.png) | ![Posterización sin patrón](popart_02.png) |
+| Patrón de estrellas sustituyendo al tono medio, con contorno Canny activado. Cada cuadrante recolorea el patrón con su propia pareja de colores y lo voltea. | El mismo encuadre con el patrón desactivado (`f`): los cuatro tonos quedan en color plano y se aprecia mejor la posterización. |
+| ![Posterización pura sin contorno](popart_03.png) | ![Patrón sobre otro nivel de tono](popart_04.png) |
+| Sin patrón y sin contorno (`c`): posterización limpia a cuatro tonos, más cercana a la serigrafía original. | El patrón movido a otro nivel de tono con las teclas `0`–`3` y otra rotación de paletas (`p`). |
 
 ---
 
@@ -156,13 +163,16 @@ cada fotograma.
 
 ## Uso de herramientas de IA
 
-- **Tarea 1 (versión con IA).** Se pidió a un asistente la generación del tablero con bucles para
-  contrastarla con la versión manual. <!-- TODO: enlace a la conversación -->
+- **Tarea 1 (versión con IA).** El propio enunciado pide resolver el tablero primero a mano y
+  después con un asistente de IA. Se le pidió la versión con bucles; la comparación entre ambas
+  está en la sección [Tarea 1](#tarea-1--tablero-de-ajedrez).
 - **Tarea 2.** Resuelta sin asistentes de IA, tal y como pedía el enunciado.
 - **Tarea 3.** Se consultó cómo obtener las posiciones del píxel más claro y más oscuro, de donde
   salió el uso de `cv2.minMaxLoc`.
   Conversación: <https://claude.ai/share/690d1b84-02da-409f-a86b-91d6bf7fba5b>
-- **Tarea 4.** https://claude.ai/share/3c25dee0-2184-4904-a24d-de7b45f457a0
+- **Tarea 4.** Se usó como apoyo para la propuesta de pop art (posterización con LUT, separación
+  del patrón con Otsu y ajuste de los umbrales por percentiles).
+  Conversación: <https://claude.ai/share/3c25dee0-2184-4904-a24d-de7b45f457a0>
 
 ---
 
